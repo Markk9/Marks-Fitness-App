@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mark's Fitness">
+<title>Mark's Fitness</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#0D0D0D;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;font-size:15px;overflow-x:hidden}
+.app{max-width:430px;margin:0 auto;padding-bottom:80px;min-height:100vh}
+.hdr{padding:50px 16px 10px;display:flex;justify-content:space-between;align-items:flex-end}
+.hdr-title{font-size:26px;font-weight:700;letter-spacing:-0.5px}
+.hdr-sub{font-size:12px;color:#888;margin-top:2px}
+.phase-bar{display:flex;background:#1A1A1A;border-radius:10px;padding:3px;margin:0 16px 14px}
+.pbtn{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:600;border-radius:8px;cursor:pointer;color:#888;border:none;background:transparent;-webkit-appearance:none}
+.pbtn.on{background:#00C896;color:#000}
+.pbtn.cut.on{background:#FF9F0A;color:#000}
+.nav{display:flex;background:#111;border-top:1px solid #222;padding:8px 0 20px;position:fixed;bottom:0;left:0;right:0;z-index:99;max-width:430px;margin:0 auto}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;cursor:pointer;padding:4px 0;gap:3px;font-size:10px;color:#555;background:none;border:none;-webkit-appearance:none}
+.ni.on{color:#00C896}
+.ni-icon{font-size:18px;line-height:1}
+.sec{display:none;padding:0 16px}
+.sec.on{display:block}
+.card{background:#1A1A1A;border-radius:14px;padding:14px;margin-bottom:12px;border:1px solid #252525}
+.ct{font-size:11px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+.sg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.sc{background:#222;border-radius:10px;padding:12px}
+.sl{font-size:11px;color:#777;margin-bottom:3px}
+.sv{font-size:20px;font-weight:700}
+.pr{margin-bottom:10px}
+.pl{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;color:#777}
+.pl span:last-child{color:#fff;font-weight:600}
+.pt{height:7px;background:#2A2A2A;border-radius:4px;overflow:hidden}
+.pf{height:100%;border-radius:4px;transition:width .4s ease}
+.meal-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #222}
+.meal-row:last-child{border-bottom:none}
+.cb{width:24px;height:24px;border-radius:50%;border:2px solid #444;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;background:none}
+.cb.ck{background:#00C896;border-color:#00C896}
+.cb.ck::after{content:'';display:block;width:6px;height:10px;border-right:2px solid #000;border-bottom:2px solid #000;transform:rotate(45deg) translate(-1px,-2px)}
+.mi{flex:1}
+.mn{font-size:14px;font-weight:600}
+.md{font-size:11px;color:#777;margin-top:2px;line-height:1.4}
+.mr{text-align:right;flex-shrink:0}
+.mk{font-size:13px;font-weight:700}
+.mp{font-size:11px;color:#777}
+.dpills{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:10px}
+.dpills::-webkit-scrollbar{display:none}
+.dp{flex-shrink:0;padding:6px 14px;background:#222;border-radius:16px;font-size:12px;font-weight:600;cursor:pointer;color:#777;border:1.5px solid transparent;white-space:nowrap}
+.dp.on{border-color:#00C896;color:#00C896;background:rgba(0,200,150,.08)}
+.ex-card{background:#222;border-radius:10px;padding:12px;margin-bottom:8px}
+.wu-card{background:#1A2A1E;border-radius:10px;padding:12px;margin-bottom:8px;border:1px solid #1E3A24}
+.ex-hdr{display:flex;align-items:center;gap:8px}
+.excb{width:24px;height:24px;border-radius:6px;border:2px solid #444;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:none}
+.excb.ck{background:#00C896;border-color:#00C896}
+.excb.ck::after{content:'';display:block;width:5px;height:9px;border-right:2px solid #000;border-bottom:2px solid #000;transform:rotate(45deg) translate(-1px,-2px)}
+.exm{flex:1;cursor:pointer}
+.exn{font-size:13px;font-weight:600}
+.exs{font-size:11px;color:#777;margin-top:2px}
+.badge{font-size:10px;padding:3px 8px;border-radius:5px;font-weight:600;flex-shrink:0;cursor:pointer;white-space:nowrap;border:none}
+.badge-g{background:rgba(0,200,150,.12);color:#00C896}
+.badge-b{background:rgba(10,132,255,.12);color:#0A84FF}
+.badge-o{background:rgba(255,159,10,.12);color:#FF9F0A}
+.badge-wu{background:rgba(90,200,120,.12);color:#5AC878}
+.ex-body{display:none;margin-top:10px;padding-top:10px;border-top:1px solid #2A2A2A}
+.ex-body.on{display:block}
+.exsvg{width:100%;border-radius:8px;background:#111;margin-bottom:8px;overflow:hidden;display:block}
+.exdesc{font-size:12px;color:#888;line-height:1.6;margin-bottom:8px}
+.extag{font-size:11px;padding:3px 10px;border-radius:5px;font-weight:600;display:inline-block}
+.htab{display:flex;gap:6px;margin-bottom:10px}
+.htbtn{flex:1;padding:8px 4px;background:#222;border:none;border-radius:9px;font-size:12px;font-weight:600;color:#777;cursor:pointer;-webkit-appearance:none}
+.htbtn.on{background:#00C896;color:#000}
+.hcg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:10px}
+.hc{background:#222;border-radius:10px;padding:12px}
+.hv{font-size:20px;font-weight:700;margin-bottom:2px}
+.hl{font-size:11px;color:#777}
+.hn{font-size:10px;color:#444;margin-top:3px}
+.ts{width:44px;height:26px;background:#333;border-radius:13px;cursor:pointer;position:relative;flex-shrink:0;border:none;-webkit-appearance:none}
+.ts.on{background:#00C896}
+.tk{width:22px;height:22px;background:#fff;border-radius:11px;position:absolute;top:2px;left:2px;transition:left .2s}
+.ts.on .tk{left:20px}
+.supp-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #222}
+.supp-row:last-child{border-bottom:none}
+.winput{background:#222;border:1px solid #333;border-radius:9px;padding:12px;font-size:16px;color:#fff;text-align:center;width:100%;-webkit-appearance:none;outline:none}
+.winput::placeholder{color:#444}
+.wbtn{background:#00C896;color:#000;font-weight:700;font-size:14px;padding:12px 20px;border-radius:9px;border:none;cursor:pointer;white-space:nowrap;-webkit-appearance:none}
+.loge{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #222;font-size:13px;color:#777}
+.loge:last-child{border-bottom:none}
+.shop-cat{font-size:10px;font-weight:700;color:#00C896;text-transform:uppercase;letter-spacing:.6px;margin:12px 0 6px}
+.shop-item{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #1A1A1A;font-size:13px;color:#ccc}
+.shop-item:last-child{border-bottom:none}
+.shop-box{width:15px;height:15px;border-radius:3px;border:1.5px solid #444;flex-shrink:0}
+.infonote{background:rgba(0,200,150,.07);border:1px solid rgba(0,200,150,.2);border-radius:9px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#00C896;line-height:1.5}
+.cutnote{background:rgba(255,159,10,.07);border:1px solid rgba(255,159,10,.2);border-radius:9px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#FF9F0A;line-height:1.5}
+.sleeprec{background:rgba(10,132,255,.07);border:1px solid rgba(10,132,255,.2);border-radius:9px;padding:10px 12px;margin-top:8px;font-size:12px;color:#0A84FF;line-height:1.5}
+.wu-label{font-size:11px;font-weight:700;color:#5AC878;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 8px}
+.sec-div{font-size:11px;font-weight:700;color:#555;text-transform:uppercase;letter-spacing:.5px;margin:14px 0 8px;padding-top:12px;border-top:1px solid #222}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hdr">
+  <div><div class="hdr-title">Mark's Fitness</div><div class="hdr-sub" id="phase-sub">Phase 1 — Bulk to 80kg</div></div>
+  <div style="font-size:11px;color:#555" id="hdr-date"></div>
+</div>
+<div class="phase-bar">
+  <button class="pbtn on" id="pb1" onclick="setPhase(1)">Phase 1 — Bulk</button>
+  <button class="pbtn cut" id="pb2" onclick="setPhase(2)">Phase 2 — Cut</button>
+</div>
+
+<div id="s-today" class="sec on">
+  <div class="card">
+    <div class="ct">Today's progress</div>
+    <div class="pr"><div class="pl"><span>Calories</span><span id="t-cal">0 / 3100 kcal</span></div><div class="pt"><div class="pf" id="b-cal" style="width:0%;background:#00C896"></div></div></div>
+    <div class="pr"><div class="pl"><span>Protein</span><span id="t-prot">0 / 190g</span></div><div class="pt"><div class="pf" id="b-prot" style="width:0%;background:#0A84FF"></div></div></div>
+    <div class="pr"><div class="pl"><span>Steps</span><span id="t-steps">0 / 10,000</span></div><div class="pt"><div class="pf" id="b-steps" style="width:0%;background:#FF9F0A"></div></div></div>
+    <div class="pr" style="margin-bottom:0"><div class="pl"><span>Workout</span><span id="t-wkt">0%</span></div><div class="pt"><div class="pf" id="b-wkt" style="width:0%;background:#FF453A"></div></div></div>
+  </div>
+  <div class="sg">
+    <div class="sc"><div class="sl">Weight</div><div class="sv" id="t-wt" style="color:#00C896">75.0 kg</div></div>
+    <div class="sc"><div class="sl">Goal</div><div class="sv" id="t-goal">80 kg</div></div>
+    <div class="sc"><div class="sl">Days to holiday</div><div class="sv" id="t-hol" style="color:#FF9F0A">—</div></div>
+    <div class="sc"><div class="sl">Phase</div><div class="sv" id="t-phase" style="color:#0A84FF">Bulk</div></div>
+  </div>
+  <div class="card"><div class="ct">Phase timeline</div><div id="timeline-box"></div></div>
+</div>
+
+<div id="s-diet" class="sec">
+  <div class="htab">
+    <button class="htbtn on" id="dt-today" onclick="dTab('today')">Today</button>
+    <button class="htbtn" id="dt-plan" onclick="dTab('plan')">Full plan</button>
+    <button class="htbtn" id="dt-shop" onclick="dTab('shop')">Shopping</button>
+  </div>
+  <div id="diet-out"></div>
+</div>
+
+<div id="s-workout" class="sec">
+  <div id="wkt-note" class="infonote">Phase 1 — Upper/lower split with warm-up each session</div>
+  <div class="dpills" id="day-pills"></div>
+  <div id="wkt-out"></div>
+</div>
+
+<div id="s-health" class="sec">
+  <div class="card">
+    <div class="ct">Health data</div>
+    <div style="font-size:12px;color:#666;margin-bottom:12px">Log manually from your Apple Watch each day.</div>
+    <div class="hcg">
+      <div class="hc"><div class="hv" id="h-hr" style="color:#FF453A">--</div><div class="hl">Heart rate (bpm)</div></div>
+      <div class="hc"><div class="hv" id="h-steps" style="color:#0A84FF">--</div><div class="hl">Steps</div><div class="pt" style="margin-top:5px;height:3px"><div class="pf" id="h-sb" style="width:0%;background:#0A84FF"></div></div><div class="hn" id="h-sn">Target: 10,000</div></div>
+      <div class="hc"><div class="hv" id="h-acal" style="color:#FF9F0A">--</div><div class="hl">Active kcal</div></div>
+      <div class="hc"><div class="hv" id="h-sleep" style="color:#00C896">--</div><div class="hl">Sleep (hrs)</div><div class="pt" style="margin-top:5px;height:3px"><div class="pf" id="h-slb" style="width:0%;background:#00C896"></div></div><div class="hn" id="h-sln">Target: 8h</div></div>
+    </div>
+    <div id="sleep-rec"></div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px">
+      <div><div style="font-size:11px;color:#777;margin-bottom:5px">Steps</div><input class="winput" type="number" id="in-steps" placeholder="e.g. 8000" style="font-size:14px;padding:9px"></div>
+      <div><div style="font-size:11px;color:#777;margin-bottom:5px">Active kcal</div><input class="winput" type="number" id="in-acal" placeholder="e.g. 400" style="font-size:14px;padding:9px"></div>
+      <div><div style="font-size:11px;color:#777;margin-bottom:5px">Heart rate</div><input class="winput" type="number" id="in-hr" placeholder="e.g. 65" style="font-size:14px;padding:9px"></div>
+      <div><div style="font-size:11px;color:#777;margin-bottom:5px">Sleep hrs</div><input class="winput" type="number" id="in-sleep" placeholder="e.g. 7.5" step="0.5" style="font-size:14px;padding:9px"></div>
+    </div>
+    <button class="wbtn" style="width:100%;margin-top:10px" onclick="saveHealth()">Save health data</button>
+  </div>
+  <div class="card"><div class="ct">Supplements</div><div id="supp-out"></div></div>
+  <div class="card">
+    <div class="ct">Weight log</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px"><input class="winput" type="number" id="in-wt" placeholder="kg e.g. 75.4" step="0.1"><button class="wbtn" onclick="saveWeight()">Save</button></div>
+    <div id="wt-log" style="font-size:12px;color:#444">No entries yet</div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="ni on" id="nav-today" onclick="showSec('s-today','nav-today')">
+    <span class="ni-icon">&#9632;</span>Today
+  </button>
+  <button class="ni" id="nav-diet" onclick="showSec('s-diet','nav-diet')">
+    <span class="ni-icon">&#9670;</span>Diet
+  </button>
+  <button class="ni" id="nav-workout" onclick="showSec('s-workout','nav-workout')">
+    <span class="ni-icon">&#9651;</span>Workout
+  </button>
+  <button class="ni" id="nav-health" onclick="showSec('s-health','nav-health')">
+    <span class="ni-icon">&#9829;</span>Health
+  </button>
+</div>
+</div>
+
+<script>
+var G={phase:1,day:'Mon',dtab:'today',mealDone:{},exDone:{},wtLog:[],stepsVal:0,sleepVal:0};
+
+var SUPPS=[
+  {id:'cr',name:'Creatine monohydrate',dose:'10g daily — 5g morning + 5g post-workout',c:'#00C896',on:false},
+  {id:'wm',name:'Wellman multivitamin (mens)',dose:'1 tablet daily with breakfast',c:'#0A84FF',on:false},
+  {id:'mg',name:'Magnesium glycinate',dose:'400mg before bed — aids sleep and recovery',c:'#FF9F0A',on:false},
+  {id:'pw',name:'Pre-workout (optional)',dose:'1 scoop 20min before training',c:'#FF9F0A',on:false}
+];
+
+var WARMUPS={
+  push:[
+    {n:'Arm circles',s:'30 sec each direction',b:'Warm-up',bc:'badge-wu',desc:'Stand tall, extend arms out to sides. Make large circles forwards for 30 seconds then reverse. Progressively increase circle size. Warms the shoulder joint before pressing.',mu:'Shoulders - rotator cuff'},
+    {n:'Band pull-apart',s:'2 x 15 reps',b:'Warm-up',bc:'badge-wu',desc:'Hold a band or towel at shoulder width. Pull apart horizontally until hands reach your sides. Squeeze shoulder blades together at the end. Essential before chest and press work.',mu:'Rear deltoids - rhomboids'},
+    {n:'Cat-cow stretch',s:'10 slow reps',b:'Warm-up',bc:'badge-wu',desc:'On all fours, alternate between arching your back upward (cat) and dipping it down (cow). Move slowly and breathe. Opens the thoracic spine before pressing.',mu:'Thoracic spine - core'},
+    {n:'Shoulder dislocations',s:'10 slow reps',b:'Warm-up',bc:'badge-wu',desc:'Hold a band or broomstick wide. Slowly pass overhead and behind you then back in one fluid motion. Keep arms straight. Dramatically improves shoulder mobility.',mu:'Shoulders - chest - lats'}
+  ],
+  pull:[
+    {n:'Thoracic rotation',s:'10 reps each side',b:'Warm-up',bc:'badge-wu',desc:'Kneel or sit, place one hand behind head, rotate your elbow up toward the ceiling as far as comfortable. Opens the thoracic spine before pulling.',mu:'Thoracic spine - lats'},
+    {n:'Dead hangs',s:'2 x 20 seconds',b:'Warm-up',bc:'badge-wu',desc:'Hang from a pull-up bar with arms fully extended. Let your body decompress. Stretches the lats and shoulders and warms up grip before rows and pull-ups.',mu:'Lats - shoulders - grip'},
+    {n:'Band face pulls',s:'2 x 15 reps',b:'Warm-up',bc:'badge-wu',desc:'Light band at face height. Pull toward your face, separating hands. Activates rear deltoids and rotator cuff before any pulling session.',mu:'Rear deltoids - rotator cuff'},
+    {n:'Scapular push-ups',s:'2 x 10 reps',b:'Warm-up',bc:'badge-wu',desc:'In a push-up position with arms locked straight. Squeeze and spread shoulder blades without bending elbows. Warms the serratus and scapular stabilisers.',mu:'Serratus - scapular stabilisers'}
+  ],
+  legs:[
+    {n:'Hip circles',s:'10 reps each leg',b:'Warm-up',bc:'badge-wu',desc:'Stand on one leg, draw large circles with your raised knee forwards and backwards. Opens the hip joint and warms the hip flexors and glutes before squatting.',mu:'Hip flexors - glutes'},
+    {n:'Leg swings',s:'15 reps each leg',b:'Warm-up',bc:'badge-wu',desc:'Hold a wall for balance. Swing one leg forward and back in a controlled arc, progressively increasing range. Lubricates the hip joint and lengthens hamstrings.',mu:'Hamstrings - hip flexors - adductors'},
+    {n:'Bodyweight squat',s:'2 x 12 reps',b:'Warm-up',bc:'badge-wu',desc:'Feet shoulder-width, toes slightly out. Squat as deep as comfortable, driving knees out. Pause 1-2 seconds at the bottom. Warms up the entire lower body pattern.',mu:'Quads - glutes - hamstrings'},
+    {n:'Glute bridge',s:'2 x 15 reps',b:'Warm-up',bc:'badge-wu',desc:'Lie on your back, knees bent, feet flat. Drive hips up by squeezing glutes, hold 1 second at top. Activates glutes and hamstrings before squats and deadlifts.',mu:'Glutes - hamstrings - lower back'},
+    {n:'Ankle circles',s:'10 reps each ankle',b:'Warm-up',bc:'badge-wu',desc:'Lift one foot and slowly rotate the ankle in large circles. 10 clockwise, 10 anti-clockwise each side. Improves ankle mobility for deep squat depth.',mu:'Ankles - calves'}
+  ],
+  cardio:[
+    {n:'Light jog or march',s:'3-5 minutes',b:'Warm-up',bc:'badge-wu',desc:'Walk briskly or jog very lightly for 3-5 minutes to elevate heart rate gently. Do not skip this — starting HIIT cold increases injury risk significantly.',mu:'Full body circulation'},
+    {n:'Hip flexor stretch',s:'30 sec each side',b:'Warm-up',bc:'badge-wu',desc:'Lunge forward onto one knee. Shift hips forward until you feel a stretch in the front of the rear hip. Hold 30 seconds each side. Essential before running.',mu:'Hip flexors - quads'},
+    {n:'Calf stretch',s:'30 sec each leg',b:'Warm-up',bc:'badge-wu',desc:'Stand facing a wall, one foot forward. Press the back heel down flat. Lean into the wall until you feel a strong stretch in the calf. Hold 30 seconds.',mu:'Calves - Achilles'}
+  ],
+  rest:[
+    {n:'Full body stretch',s:'10-15 minutes',b:'Warm-up',bc:'badge-wu',desc:'Use recovery days for a full-body stretch. Hold each stretch 30-60 seconds. Focus on hips, chest, thoracic spine and hamstrings — the areas most impacted by heavy training.',mu:'Full body flexibility'},
+    {n:'Foam roll — full body',s:'10 minutes',b:'Warm-up',bc:'badge-wu',desc:'Roll slowly over quads, hamstrings, glutes, lats and upper back. Pause on tight spots for 20-30 seconds. Promotes blood flow and reduces soreness.',mu:'Full body soft tissue'}
+  ]
+};
+
+var BWK={
+  Mon:{label:'Upper — push',type:'push',ex:[
+    {n:'Barbell bench press',s:'4 x 6-8 reps',b:'Compound',bc:'badge-g',desc:'Lie flat, grip wider than shoulders. Lower bar to mid-chest under control, press explosively up. Keep shoulder blades retracted throughout the movement.',mu:'Chest - front deltoids - triceps'},
+    {n:'Incline dumbbell press',s:'3 x 8-10 reps',b:'Compound',bc:'badge-g',desc:'Bench at 30-45 degrees. Press dumbbells from shoulder height up and slightly inward. Lower to sides of upper chest with control.',mu:'Upper chest - front deltoids - triceps'},
+    {n:'Overhead press',s:'3 x 8-10 reps',b:'Compound',bc:'badge-g',desc:'Stand feet shoulder-width. Press bar overhead from collarbone until arms fully extended. Core braced and ribcage down throughout.',mu:'Shoulders - triceps - upper traps'},
+    {n:'Cable lateral raise',s:'3 x 12-15 reps',b:'Isolation',bc:'badge-b',desc:'Side-on to low cable. Raise arm to shoulder height with slight elbow bend. Lower slowly — avoid swinging. Keep tension throughout.',mu:'Lateral deltoid'},
+    {n:'Tricep pushdown',s:'3 x 12-15 reps',b:'Isolation',bc:'badge-b',desc:'Elbows pinned to sides. Push attachment down until arms fully extended. Squeeze at the bottom, return slowly with control.',mu:'Triceps'}
+  ]},
+  Tue:{label:'Lower — quads',type:'legs',ex:[
+    {n:'Barbell back squat',s:'4 x 6-8 reps',b:'Compound',bc:'badge-g',desc:'Bar on upper traps, feet shoulder-width. Descend until thighs parallel or below, drive through heels to stand. Knees out throughout.',mu:'Quads - glutes - hamstrings - core'},
+    {n:'Leg press',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Feet shoulder-width on platform. Lower until knees reach 90 degrees, press back without locking out. Keep lower back on pad.',mu:'Quads - glutes - hamstrings'},
+    {n:'Bulgarian split squat',s:'3 x 10 each',b:'Unilateral',bc:'badge-b',desc:'Rear foot elevated, front foot well forward. Lower back knee toward floor. Drive through front heel to return. Works each leg independently.',mu:'Quads - glutes - hip flexors'},
+    {n:'Leg extension',s:'3 x 12-15 reps',b:'Isolation',bc:'badge-b',desc:'Pad just above ankles. Extend until straight, squeeze quads hard at top. Lower slowly over 3 seconds.',mu:'Quadriceps'},
+    {n:'Standing calf raise',s:'4 x 15-20 reps',b:'Isolation',bc:'badge-b',desc:'Heels off step edge. Rise as high as possible onto toes, pause at top, lower heels below step for full stretch. Calves need full range.',mu:'Gastrocnemius - soleus'}
+  ]},
+  Wed:{label:'Rest / Recovery',type:'rest',ex:[
+    {n:'Light walk or cycle',s:'20-30 min easy',b:'Recovery',bc:'badge-o',desc:'Very low intensity only. Goal is blood flow and recovery — not additional fatigue. A brisk walk or easy bike ride works well.',mu:'Full body circulation'},
+    {n:'Foam rolling',s:'10-15 min full body',b:'Recovery',bc:'badge-o',desc:'Slow rolls, pausing 20-30 seconds on tight spots. Focus on quads, hamstrings, glutes and lats from previous sessions.',mu:'Soft tissue'}
+  ]},
+  Thu:{label:'Upper — pull',type:'pull',ex:[
+    {n:'Weighted pull-ups',s:'4 x 6-8 reps',b:'Compound',bc:'badge-g',desc:'Overhand grip slightly wider than shoulders. Pull shoulder blades down and back first, then drive elbows toward hips. Lower fully under control.',mu:'Lats - biceps - rear deltoids'},
+    {n:'Barbell bent-over row',s:'4 x 6-8 reps',b:'Compound',bc:'badge-g',desc:'Hinge at hips with flat back, torso roughly parallel to floor. Pull bar to lower chest, drive elbows back. Full range of motion each rep.',mu:'Lats - rhomboids - rear deltoids - biceps'},
+    {n:'Seated cable row',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Sit upright at cable row. Pull handle to lower abdomen, squeeze shoulder blades together. Avoid rocking the torso back.',mu:'Mid-back - lats - biceps'},
+    {n:'Face pulls',s:'3 x 15 reps',b:'Isolation',bc:'badge-b',desc:'Cable at face height with rope. Pull toward face, separating the ends either side of your head. Key shoulder health exercise — never skip this.',mu:'Rear deltoids - rotator cuff - traps'},
+    {n:'Dumbbell curl',s:'3 x 12 reps',b:'Isolation',bc:'badge-b',desc:'Elbows pinned to sides. Curl both arms simultaneously, squeeze hard at top. Lower slowly for a full stretch at the bottom.',mu:'Biceps - brachialis'}
+  ]},
+  Fri:{label:'Lower — posterior chain',type:'legs',ex:[
+    {n:'Romanian deadlift',s:'4 x 6-8 reps',b:'Compound',bc:'badge-g',desc:'Hold bar at hip level, push hips back with flat back. Lower until deep hamstring stretch then drive hips forward to return. Bar stays close to legs.',mu:'Hamstrings - glutes - lower back'},
+    {n:'Hack squat',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Shoulders under pads, feet shoulder-width on platform. Lower to parallel or below. More quad emphasis with lower foot placement.',mu:'Quads - glutes'},
+    {n:'Lying leg curl',s:'3 x 10-12 reps',b:'Isolation',bc:'badge-b',desc:'Pad just above ankles. Curl legs to glutes, take 3 seconds to lower. Avoid lifting hips off the pad.',mu:'Hamstrings'},
+    {n:'Hip thrust',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Upper back on bench, bar across hips. Drive through heels and squeeze glutes hard to thrust hips up. Pause at top.',mu:'Glutes - hamstrings'},
+    {n:'Seated calf raise',s:'4 x 15-20 reps',b:'Isolation',bc:'badge-b',desc:'Pad resting above knees. Rise onto toes, pause, lower heels below plate for full stretch. Seated version targets soleus more.',mu:'Soleus - gastrocnemius'}
+  ]},
+  Sat:{label:'Arms and shoulders',type:'push',ex:[
+    {n:'Dumbbell shoulder press',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Sit upright on bench. Press dumbbells overhead until arms fully extended then lower slowly to starting position.',mu:'Shoulders - triceps - upper traps'},
+    {n:'Lateral raises',s:'4 x 15 reps',b:'Isolation',bc:'badge-b',desc:'Raise arms to shoulder height with slight elbow bend. Focus on feel and muscle contraction over load. Lower with control.',mu:'Lateral deltoid'},
+    {n:'Barbell curl',s:'3 x 10-12 reps',b:'Isolation',bc:'badge-b',desc:'Elbows fixed at sides, curl bar to shoulder height. Lower all the way down for full stretch. No swinging or momentum.',mu:'Biceps - forearms'},
+    {n:'Skull crushers',s:'3 x 10-12 reps',b:'Isolation',bc:'badge-b',desc:'Lie flat on bench, upper arms vertical. Bend only at elbows to lower weight toward forehead then extend back up. Control throughout.',mu:'Triceps — long head'}
+  ]},
+  Sun:{label:'Full rest day',type:'rest',ex:[
+    {n:'Rest and recover',s:'All day',b:'Recovery',bc:'badge-o',desc:'Muscle growth happens during rest not during training. Hit protein and calorie targets, drink plenty of water, aim for 8 hours sleep.',mu:'Full body recovery'}
+  ]}
+};
+
+var CWK={
+  Mon:{label:'Upper push — cut',type:'push',ex:[
+    {n:'Barbell bench press',s:'4 x 8-10 reps',b:'Compound',bc:'badge-g',desc:'Maintain load if possible. Slightly higher rep range to preserve muscle in a calorie deficit.',mu:'Chest - front deltoids - triceps'},
+    {n:'Overhead press',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Controlled tempo throughout. Focus on mind-muscle connection to preserve mass during cut.',mu:'Shoulders - triceps'},
+    {n:'Incline dumbbell press',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'3 second eccentric on the way down. Upper chest focus.',mu:'Upper chest - front deltoids'},
+    {n:'Lateral raise superset',s:'3 x 15 reps',b:'Superset',bc:'badge-b',desc:'Pair with face pulls, minimal rest between. Shoulder health and development maintained during cut.',mu:'Lateral deltoid - rear delt'},
+    {n:'Tricep pushdown',s:'3 x 15 reps',b:'Isolation',bc:'badge-b',desc:'Higher reps with shorter rest periods for metabolic effect. Keep tension throughout.',mu:'Triceps'}
+  ]},
+  Tue:{label:'Lower — full legs cut',type:'legs',ex:[
+    {n:'Barbell back squat',s:'4 x 8-10 reps',b:'Compound',bc:'badge-g',desc:'Maintain depth and form. Use manageable weight at higher reps to preserve muscle in deficit.',mu:'Quads - glutes - hamstrings'},
+    {n:'Romanian deadlift',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Full hamstring stretch each rep. Controlled tempo — no fast reps during the cut phase.',mu:'Hamstrings - glutes'},
+    {n:'Leg press',s:'3 x 12-15 reps',b:'Compound',bc:'badge-g',desc:'Higher rep range for metabolic effect. Rest 60-75 seconds between sets.',mu:'Quads - glutes'},
+    {n:'Hip thrust',s:'3 x 12 reps',b:'Compound',bc:'badge-g',desc:'Essential for maintaining glute development during a cut. Glute squeeze hard at the top.',mu:'Glutes - hamstrings'},
+    {n:'Calf raise superset',s:'4 x 20 reps',b:'Isolation',bc:'badge-b',desc:'Standing then immediately seated. Full range of motion on both variations.',mu:'Gastrocnemius - soleus'}
+  ]},
+  Wed:{label:'HIIT cardio',type:'cardio',ex:[
+    {n:'Rowing machine HIIT',s:'20 min — 30s hard / 90s easy',b:'Cardio',bc:'badge-o',desc:'8 rounds of effort. Hard intervals should be near maximum. Excellent calorie burn with minimal muscle loss compared to steady-state.',mu:'Full body cardio'},
+    {n:'Incline treadmill walk',s:'20 min at 6-8% incline',b:'Cardio',bc:'badge-o',desc:'Steady pace at high incline. Burns significant calories without impairing muscle recovery for next training session.',mu:'Legs - cardio'}
+  ]},
+  Thu:{label:'Upper pull — cut',type:'pull',ex:[
+    {n:'Weighted pull-ups',s:'4 x 6-8 reps',b:'Compound',bc:'badge-g',desc:'Maintain load if possible. Pull-ups are the single most important exercise for retaining upper body muscle during a cut.',mu:'Lats - biceps - rear deltoids'},
+    {n:'Barbell bent-over row',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Full range of motion with controlled tempo. Feel the squeeze at the top of each rep.',mu:'Lats - rhomboids - biceps'},
+    {n:'Single-arm dumbbell row',s:'3 x 12 reps',b:'Unilateral',bc:'badge-b',desc:'Knee on bench for support. Full stretch at the bottom, strong pull to the top.',mu:'Lats - mid-back'},
+    {n:'Face pulls',s:'4 x 15 reps',b:'Isolation',bc:'badge-b',desc:'Non-negotiable for shoulder health. Never drop this exercise from the programme.',mu:'Rear deltoids - rotator cuff'},
+    {n:'Hammer curl',s:'3 x 12 reps',b:'Isolation',bc:'badge-b',desc:'Neutral grip targets the brachialis. Full range of motion with controlled tempo.',mu:'Biceps - brachialis'}
+  ]},
+  Fri:{label:'Lower plus HIIT finisher',type:'legs',ex:[
+    {n:'Goblet squat',s:'3 x 10-12 reps',b:'Compound',bc:'badge-g',desc:'Front-loaded variation that is easier on the lower back. More quad dominant than back squat.',mu:'Quads - core'},
+    {n:'Lying leg curl',s:'3 x 12-15 reps',b:'Isolation',bc:'badge-b',desc:'3 second eccentric on every rep. High volume for hamstring development during cut.',mu:'Hamstrings'},
+    {n:'Bulgarian split squat',s:'3 x 12 each',b:'Unilateral',bc:'badge-b',desc:'Metabolically demanding. Burns significant calories while preserving and developing leg muscle.',mu:'Quads - glutes'},
+    {n:'Bike sprint finisher',s:'10 min — 20s max / 40s rest',b:'Cardio',bc:'badge-o',desc:'6 rounds of maximum effort sprints on stationary bike. Ends the session with a powerful metabolic burst.',mu:'Legs - cardio'}
+  ]},
+  Sat:{label:'Steady-state cardio',type:'cardio',ex:[
+    {n:'Incline walk or jog',s:'40 min zone 2',b:'Cardio',bc:'badge-o',desc:'Keep heart rate between 120-140bpm. Zone 2 training maximises fat oxidation while preserving muscle tissue.',mu:'Cardio - legs'}
+  ]},
+  Sun:{label:'Full rest day',type:'rest',ex:[
+    {n:'Rest and recover',s:'All day',b:'Recovery',bc:'badge-o',desc:'Sleep and nutrition are your primary tools today. Aim for 8 hours of sleep. Hit your protein target even on rest days.',mu:'Full body recovery'}
+  ]}
+};
+
+var BULK=[
+  {week:'Days 1-3',meals:[
+    {n:'Oats and whey shake',d:'100g oats, 1 scoop whey, 300ml whole milk, banana',k:680,p:45,ing:['100g oats','1 scoop whey protein','300ml whole milk','1 banana']},
+    {n:'Chicken and rice bowl',d:'200g chicken breast, 200g rice, broccoli, olive oil',k:750,p:55,ing:['200g chicken breast','200g white rice','200g broccoli','olive oil']},
+    {n:'Greek yoghurt and berries',d:'200g full-fat yoghurt, 100g blueberries, granola',k:380,p:20,ing:['200g full-fat Greek yoghurt','100g blueberries','40g granola']},
+    {n:'Beef stir fry and noodles',d:'200g lean beef mince, noodles, peppers, soy sauce',k:700,p:45,ing:['200g lean beef mince','150g noodles','2 peppers','soy sauce']},
+    {n:'Cottage cheese',d:'200g cottage cheese before bed',k:180,p:24,ing:['200g cottage cheese']}
+  ]},
+  {week:'Days 4-6',meals:[
+    {n:'Banana protein pancakes',d:'2 bananas, 1 scoop whey, 2 tbsp oats, coconut oil',k:520,p:32,ing:['2 bananas','1 scoop whey protein','2 tbsp oats','coconut oil']},
+    {n:'Turkey wrap',d:'200g turkey breast, wholemeal wrap, hummus, salad',k:620,p:48,ing:['200g turkey breast','1 wholemeal wrap','hummus','mixed salad']},
+    {n:'Rice cakes and peanut butter',d:'4 rice cakes, 2 tbsp peanut butter',k:320,p:10,ing:['4 rice cakes','peanut butter']},
+    {n:'Chicken thigh and sweet potato',d:'250g chicken thigh, 300g sweet potato, green beans',k:720,p:52,ing:['250g chicken thighs','300g sweet potato','200g green beans']},
+    {n:'Protein shake and milk',d:'1 scoop whey, 300ml whole milk',k:280,p:35,ing:['1 scoop whey protein','300ml whole milk']}
+  ]},
+  {week:'Days 7-9',meals:[
+    {n:'Porridge and whey',d:'100g oats, 1 scoop whey, honey, whole milk',k:670,p:43,ing:['100g oats','1 scoop whey protein','1 tbsp honey','300ml whole milk']},
+    {n:'Tuna pasta',d:'2 tins tuna, 180g pasta, tomato sauce, spinach',k:710,p:58,ing:['2 tins tuna in water','180g pasta','200ml tomato sauce','100g spinach']},
+    {n:'Apple and peanut butter',d:'1 apple, 2 tbsp peanut butter',k:280,p:8,ing:['1 apple','peanut butter']},
+    {n:'Lamb mince and rice',d:'200g lamb mince, 200g rice, mixed veg, herbs',k:750,p:44,ing:['200g lamb mince','200g white rice','mixed veg','mixed herbs']},
+    {n:'Casein shake',d:'1 scoop casein, 300ml water',k:140,p:30,ing:['1 scoop casein protein']}
+  ]},
+  {week:'Days 10-12',meals:[
+    {n:'Smoothie bowl',d:'2 scoops whey, banana, whole milk, berries, granola',k:620,p:50,ing:['2 scoops whey protein','1 banana','250ml whole milk','100g berries','granola']},
+    {n:'Beef and potato hash',d:'150g lean beef mince, 2 potatoes, peppers',k:650,p:42,ing:['150g lean beef mince','2 potatoes','2 peppers']},
+    {n:'Cottage cheese and fruit',d:'200g cottage cheese, 150g mixed fruit',k:260,p:26,ing:['200g cottage cheese','150g mixed fruit']},
+    {n:'Chicken kebabs and pitta',d:'200g chicken breast, 2 pitta breads, tzatziki',k:680,p:50,ing:['200g chicken breast','2 pitta breads','tzatziki']},
+    {n:'Milk and oats snack',d:'300ml whole milk, 50g oats',k:340,p:15,ing:['300ml whole milk','50g oats']}
+  ]}
+];
+
+var CUT=[
+  {week:'Cut week 1-2 (days 1-3)',meals:[
+    {n:'Whey smoothie',d:'2 scoops whey, banana, 200ml almond milk, spinach',k:340,p:50,ing:['2 scoops whey protein','1 banana','200ml almond milk','100g spinach']},
+    {n:'Chicken and veg bowl',d:'220g chicken breast, 150g brown rice, broccoli',k:520,p:52,ing:['220g chicken breast','150g brown rice','200g broccoli']},
+    {n:'Low-fat Greek yoghurt and berries',d:'200g 0% yoghurt, berries, cinnamon',k:160,p:20,ing:['200g 0% Greek yoghurt','100g berries','cinnamon']},
+    {n:'Lean beef and roasted veg',d:'200g extra lean beef, courgette, peppers',k:460,p:44,ing:['200g extra lean beef mince','1 courgette','2 peppers']},
+    {n:'Casein shake',d:'1 scoop casein in water',k:140,p:30,ing:['1 scoop casein protein']}
+  ]},
+  {week:'Cut week 1-2 (days 4-6)',meals:[
+    {n:'Banana whey shake',d:'1 scoop whey, banana, 150ml almond milk',k:320,p:35,ing:['1 scoop whey protein','1 banana','150ml almond milk']},
+    {n:'Tuna rice bowl',d:'2 tins tuna, 120g brown rice, edamame, soy sauce',k:500,p:54,ing:['2 tins tuna','120g brown rice','100g edamame','soy sauce']},
+    {n:'Rice cakes and cottage cheese',d:'3 rice cakes, 100g cottage cheese',k:180,p:16,ing:['3 rice cakes','100g cottage cheese']},
+    {n:'Baked chicken and salad',d:'200g chicken breast, large salad, light dressing',k:380,p:46,ing:['200g chicken breast','mixed salad','light olive oil dressing']},
+    {n:'Protein shake in water',d:'1 scoop whey in water',k:120,p:28,ing:['1 scoop whey protein']}
+  ]},
+  {week:'Cut week 3-4 (days 1-3)',meals:[
+    {n:'Overnight oats',d:'50g oats, almond milk, 1 scoop whey, berries',k:320,p:32,ing:['50g oats','150ml almond milk','1 scoop whey protein','100g berries']},
+    {n:'Chicken stir fry air fried',d:'220g chicken, mixed veg, soy sauce, garlic',k:420,p:50,ing:['220g chicken breast','300g stir fry veg','soy sauce','garlic']},
+    {n:'Apple and protein shake',d:'1 apple, 1 scoop whey in water',k:220,p:28,ing:['1 apple','1 scoop whey protein']},
+    {n:'Prawn and courgette noodles',d:'200g king prawns, courgette noodles, garlic, tamari',k:320,p:40,ing:['200g king prawns','2 courgettes','garlic','tamari sauce']},
+    {n:'Casein pudding',d:'1 scoop casein, 150ml water, made thick',k:140,p:30,ing:['1 scoop casein protein']}
+  ]},
+  {week:'Cut week 3-4 (days 4-6)',meals:[
+    {n:'Whey banana smoothie',d:'1 scoop whey, banana, 200ml almond milk',k:300,p:34,ing:['1 scoop whey protein','1 banana','200ml almond milk']},
+    {n:'Lean turkey mince and rice',d:'200g turkey mince, 120g brown rice, roasted veg',k:490,p:52,ing:['200g turkey mince','120g brown rice','300g roasted veg']},
+    {n:'Celery and hummus',d:'4 celery sticks, 2 tbsp hummus',k:100,p:5,ing:['4 celery sticks','hummus']},
+    {n:'Baked cod and sweet potato',d:'200g cod fillet, 200g sweet potato, asparagus',k:420,p:46,ing:['200g cod fillet','200g sweet potato','200g asparagus']},
+    {n:'0% yoghurt and berries',d:'200g 0% Greek yoghurt, 100g berries',k:140,p:18,ing:['200g 0% Greek yoghurt','100g berries']}
+  ]},
+  {week:'Cut week 5-6 (days 1-3)',meals:[
+    {n:'Protein overnight oats',d:'50g oats, almond milk, 2 scoops whey, blueberries',k:380,p:52,ing:['50g oats','150ml almond milk','2 scoops whey protein','blueberries']},
+    {n:'Turkey and brown rice bowl',d:'220g turkey mince, 100g brown rice, broccoli, soy',k:480,p:54,ing:['220g turkey mince','100g brown rice','200g broccoli','soy sauce']},
+    {n:'Cottage cheese and berries',d:'150g low-fat cottage cheese, 100g berries',k:180,p:22,ing:['150g low-fat cottage cheese','100g berries']},
+    {n:'Grilled chicken and veg',d:'220g chicken breast, roasted courgette, peppers, herbs',k:380,p:48,ing:['220g chicken breast','1 courgette','2 peppers','mixed herbs']},
+    {n:'Casein shake',d:'1 scoop casein in water',k:140,p:30,ing:['1 scoop casein protein']}
+  ]},
+  {week:'Cut week 5-6 (days 4-6)',meals:[
+    {n:'Whey and oat shake',d:'1 scoop whey, 40g oats, 200ml almond milk',k:320,p:36,ing:['1 scoop whey protein','40g oats','200ml almond milk']},
+    {n:'Tuna and sweet potato',d:'2 tins tuna, 200g sweet potato, spinach',k:480,p:52,ing:['2 tins tuna in water','200g sweet potato','100g spinach']},
+    {n:'Apple and protein shake',d:'1 apple, 1 scoop whey in water',k:200,p:26,ing:['1 apple','1 scoop whey protein']},
+    {n:'King prawn stir fry',d:'200g king prawns, mixed veg, tamari, garlic',k:340,p:42,ing:['200g king prawns','mixed stir fry veg','tamari sauce','garlic']},
+    {n:'0% Greek yoghurt',d:'200g 0% Greek yoghurt, cinnamon',k:120,p:20,ing:['200g 0% Greek yoghurt','cinnamon']}
+  ]},
+  {week:'Cut week 7-8 (days 1-3)',meals:[
+    {n:'Low-carb protein shake',d:'2 scoops whey, 200ml almond milk, spinach',k:260,p:54,ing:['2 scoops whey protein','200ml almond milk','100g spinach']},
+    {n:'Chicken and veg — no rice',d:'250g chicken breast, roasted veg, olive oil',k:400,p:56,ing:['250g chicken breast','400g roasted mixed veg','olive oil']},
+    {n:'Cottage cheese',d:'150g low-fat cottage cheese',k:130,p:18,ing:['150g low-fat cottage cheese']},
+    {n:'Lean beef and greens',d:'200g extra lean beef, asparagus, broccoli',k:380,p:46,ing:['200g extra lean beef mince','200g asparagus','200g broccoli']},
+    {n:'Casein shake',d:'1 scoop casein in water',k:140,p:30,ing:['1 scoop casein protein']}
+  ]},
+  {week:'Cut week 7-8 (days 4-6)',meals:[
+    {n:'Whey and almond milk',d:'2 scoops whey, 200ml almond milk',k:240,p:50,ing:['2 scoops whey protein','200ml almond milk']},
+    {n:'Baked cod and veg',d:'250g cod fillet, asparagus, courgette, herbs',k:360,p:52,ing:['250g cod fillet','200g asparagus','1 courgette','mixed herbs']},
+    {n:'0% yoghurt and berries',d:'200g 0% Greek yoghurt, 80g berries',k:140,p:20,ing:['200g 0% Greek yoghurt','80g berries']},
+    {n:'Grilled turkey and salad',d:'230g turkey breast, large salad, light dressing',k:360,p:50,ing:['230g turkey breast','large mixed salad','light dressing']},
+    {n:'Casein shake',d:'1 scoop casein in water',k:140,p:30,ing:['1 scoop casein protein']}
+  ]}
+];
+
+function setPhase(p){
+  G.phase=p;
+  document.getElementById('pb1').className='pbtn'+(p==1?' on':'');
+  document.getElementById('pb2').className='pbtn cut'+(p==2?' on':'');
+  document.getElementById('phase-sub').textContent=p==1?'Phase 1 — Bulk to 80kg':'Phase 2 — 8-week cut for holiday';
+  document.getElementById('t-goal').textContent=p==1?'80 kg':'Holiday ready';
+  document.getElementById('t-phase').textContent=p==1?'Bulk':'Cut';
+  document.getElementById('t-phase').style.color=p==1?'#0A84FF':'#FF9F0A';
+  document.getElementById('wkt-note').className=p==1?'infonote':'cutnote';
+  document.getElementById('wkt-note').textContent=p==1?'Phase 1 — Upper/lower split with warm-up each session':'Phase 2 — 8-week cut + cardio. 2,400 kcal/day. Holiday 31 Aug 2026';
+  var tk=p==1?3100:2400,tp=p==1?190:200;
+  document.getElementById('t-cal').textContent='0 / '+tk+' kcal';
+  document.getElementById('t-prot').textContent='0 / '+tp+'g';
+  G.mealDone={};G.exDone={};
+  updBars();renderDiet();renderWkt(G.day);renderTimeline();
+}
+
+function showSec(id,navId){
+  document.querySelectorAll('.sec').forEach(function(s){s.classList.remove('on');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
+  document.getElementById(id).classList.add('on');
+  document.getElementById(navId).classList.add('on');
+  if(id=='s-diet') renderDiet();
+  if(id=='s-workout') renderWkt(G.day);
+  if(id=='s-health'){renderSupps();renderSleepRec();}
+}
+
+function dTab(t){
+  G.dtab=t;
+  ['today','plan','shop'].forEach(function(x){document.getElementById('dt-'+x).className='htbtn'+(x==t?' on':'');});
+  renderDiet();
+}
+
+function getMeals(){return G.phase==1?BULK:CUT;}
+function getBlockIdx(){
+  var now=new Date(),start=new Date('2026-04-21');
+  var days=Math.max(0,Math.floor((now-start)/86400000));
+  return Math.floor(days/3)%getMeals().length;
+}
+
+function renderDiet(){
+  var meals=getMeals(),bi=getBlockIdx(),block=meals[bi];
+  var tk=G.phase==1?3100:2400,tp=G.phase==1?190:200;
+  var nc=G.phase==1?'infonote':'cutnote';
+  var out='';
+  if(G.dtab=='today'){
+    out='<div class="'+nc+'">'+block.week+' — '+(G.phase==1?'Bulk: '+tk+' kcal and '+tp+'g protein':'Cut: '+tk+' kcal and '+tp+'g protein')+'</div>';
+    out+='<div class="card"><div class="ct">Today\'s meals — tick when eaten</div>';
+    block.meals.forEach(function(m,i){
+      var k='m'+i,done=G.mealDone[k];
+      out+='<div class="meal-row">';
+      out+='<div class="cb'+(done?' ck':'')+'" onclick="togMeal(\''+k+'\','+m.k+','+m.p+')"></div>';
+      out+='<div class="mi"><div class="mn" style="'+(done?'opacity:0.4':'')+'"">'+m.n+'</div><div class="md">'+m.d+'</div></div>';
+      out+='<div class="mr"><div class="mk">'+m.k+'</div><div class="mp">'+m.p+'g</div></div>';
+      out+='</div>';
+    });
+    out+='</div>';
+  } else if(G.dtab=='plan'){
+    out='<div class="card"><div class="ct">Full rotation plan</div>';
+    meals.forEach(function(blk,idx){
+      var active=idx==bi;
+      out+='<div style="margin-bottom:14px">';
+      out+='<div style="font-size:12px;font-weight:700;padding:7px 10px;border-radius:8px;margin-bottom:6px;background:'+(active?'rgba(0,200,150,0.1)':'#252525')+';color:'+(active?'#00C896':'#777')+'">'+(active?'&rsaquo; ':'')+blk.week+(active?' (current)':'')+'</div>';
+      blk.meals.forEach(function(m){
+        out+='<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid #1A1A1A"><span style="color:#ccc">'+m.n+'</span><span style="color:#555">'+m.k+' kcal</span></div>';
+      });
+      out+='</div>';
+    });
+    out+='</div>';
+  } else {
+    var cats={protein:[],carbs:[],dairy:[],veg:[],pantry:[]};
+    meals.forEach(function(blk){blk.meals.forEach(function(m){m.ing.forEach(function(i){
+      var lc=i.toLowerCase();
+      if(/chicken|beef|turkey|tuna|lamb|prawn|cod|whey|casein|protein/.test(lc)) cats.protein.push(i);
+      else if(/oats|rice|pasta|potato|pitta|wrap|noodle|granola/.test(lc)) cats.carbs.push(i);
+      else if(/milk|yoghurt|cottage/.test(lc)) cats.dairy.push(i);
+      else if(/broccoli|spinach|pepper|courgette|veg|bean|asparagus|celery|apple|banana|berr|fruit|salad/.test(lc)) cats.veg.push(i);
+      else cats.pantry.push(i);
+    });});});
+    var cnames={protein:'Protein',carbs:'Carbs and grains',dairy:'Dairy',veg:'Fruit and veg',pantry:'Pantry and other'};
+    out='<div class="'+nc+'">Shopping list — covers all rotation blocks</div><div class="card">';
+    Object.keys(cats).forEach(function(cat){
+      if(!cats[cat].length) return;
+      out+='<div class="shop-cat">'+cnames[cat]+'</div>';
+      var seen={};
+      cats[cat].forEach(function(item){
+        var clean=item.replace(/^\d+[gml\s]*/i,'').trim();
+        clean=clean.charAt(0).toUpperCase()+clean.slice(1);
+        if(!clean||seen[clean]) return; seen[clean]=true;
+        out+='<div class="shop-item"><div class="shop-box"></div>'+clean+'</div>';
+      });
+    });
+    out+='</div>';
+  }
+  document.getElementById('diet-out').innerHTML=out;
+}
+
+function togMeal(k,kcal,prot){G.mealDone[k]=!G.mealDone[k];updBars();renderDiet();renderSleepRec();}
+
+function updBars(){
+  var block=getMeals()[getBlockIdx()],totalK=0,totalP=0;
+  Object.keys(G.mealDone).forEach(function(k){
+    if(!G.mealDone[k]) return;
+    var i=parseInt(k.replace('m',''));
+    if(block.meals[i]){totalK+=block.meals[i].k;totalP+=block.meals[i].p;}
+  });
+  var tk=G.phase==1?3100:2400,tp=G.phase==1?190:200;
+  document.getElementById('t-cal').textContent=totalK+' / '+tk+' kcal';
+  document.getElementById('t-prot').textContent=totalP+' / '+tp+'g';
+  document.getElementById('b-cal').style.width=Math.min(100,Math.round(totalK/tk*100))+'%';
+  document.getElementById('b-prot').style.width=Math.min(100,Math.round(totalP/tp*100))+'%';
+  updWktBar();
+}
+
+function updWktBar(){
+  var ws=G.phase==1?BWK:CWK,day=ws[G.day];
+  if(!day) return;
+  var wu=WARMUPS[day.type]||[];
+  var total=wu.length+day.ex.length,done=0;
+  wu.forEach(function(e,i){if(G.exDone['wu'+G.day+i]) done++;});
+  day.ex.forEach(function(e,i){if(G.exDone[G.day+i]) done++;});
+  var pct=total?Math.round(done/total*100):0;
+  document.getElementById('t-wkt').textContent=pct+'%';
+  document.getElementById('b-wkt').style.width=pct+'%';
+}
+
+function renderWkt(day){
+  G.day=day;
+  var ws=G.phase==1?BWK:CWK;
+  document.getElementById('day-pills').innerHTML=Object.keys(ws).map(function(d){
+    return '<div class="dp'+(d==day?' on':'')+'" onclick="renderWkt(\''+d+'\')">'+d+'</div>';
+  }).join('');
+  var w=ws[day];
+  if(!w){document.getElementById('wkt-out').innerHTML='';return;}
+  var wu=WARMUPS[w.type]||[];
+  var out='';
+  if(wu.length){
+    out+='<div class="wu-label">Warm-up — complete before training</div>';
+    wu.forEach(function(ex,i){
+      var k='wu'+day+i,done=G.exDone[k];
+      out+='<div class="wu-card"><div class="ex-hdr">';
+      out+='<div class="excb'+(done?' ck':'')+'" onclick="togEx(\''+k+'\')"></div>';
+      out+='<div class="exm" onclick="togExB(\'eb'+k+'\')" style="'+(done?'opacity:0.4':'')+'">';
+      out+='<div class="exn" style="color:#5AC878">'+ex.n+'</div><div class="exs">'+ex.s+'</div></div>';
+      out+='<span class="badge badge-wu" onclick="togExB(\'eb'+k+'\')">'+ex.b+' v</span>';
+      out+='</div><div class="ex-body" id="eb'+k+'">';
+      out+=makeSVG(ex.n,true);
+      out+='<div class="exdesc">'+ex.desc+'</div>';
+      out+='<span class="extag" style="background:rgba(90,200,120,0.1);color:#5AC878">'+ex.mu+'</span>';
+      out+='</div></div>';
+    });
+  }
+  out+='<div class="sec-div">'+w.label+'</div>';
+  w.ex.forEach(function(ex,i){
+    var k=day+i,done=G.exDone[k];
+    out+='<div class="ex-card"><div class="ex-hdr">';
+    out+='<div class="excb'+(done?' ck':'')+'" onclick="togEx(\''+k+'\')"></div>';
+    out+='<div class="exm" onclick="togExB(\'eb'+k+'\')" style="'+(done?'opacity:0.4':'')+'">';
+    out+='<div class="exn">'+ex.n+'</div><div class="exs">'+ex.s+'</div></div>';
+    out+='<span class="badge '+ex.bc+'" onclick="togExB(\'eb'+k+'\')">'+ex.b+' v</span>';
+    out+='</div><div class="ex-body" id="eb'+k+'">';
+    out+=makeSVG(ex.n,false);
+    out+='<div class="exdesc">'+ex.desc+'</div>';
+    out+='<span class="extag badge-g">'+ex.mu+'</span>';
+    out+='</div></div>';
+  });
+  document.getElementById('wkt-out').innerHTML=out;
+  updWktBar();
+}
+
+function makeSVG(name,isWu){
+  var c=isWu?'#5AC878':'#00C896';
+  var n=name.toLowerCase();
+  var svg='';
+  if(/bench/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="40" y="72" width="220" height="10" rx="4" fill="#333"/><rect x="80" y="44" width="140" height="10" rx="4" fill="#444"/><circle cx="73" cy="49" r="12" fill="none" stroke="#444" stroke-width="3"/><circle cx="227" cy="49" r="12" fill="none" stroke="#444" stroke-width="3"/><ellipse cx="150" cy="62" rx="16" ry="22" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="114" y1="68" x2="84" y2="90" stroke="'+c+'" stroke-width="2.5"/><line x1="186" y1="68" x2="216" y2="90" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="112" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Bench Press</text></svg>';
+  } else if(/squat|goblet/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><line x1="100" y1="30" x2="200" y2="30" stroke="#444" stroke-width="6" stroke-linecap="round"/><circle cx="93" cy="30" r="8" fill="none" stroke="#444" stroke-width="2.5"/><circle cx="207" cy="30" r="8" fill="none" stroke="#444" stroke-width="2.5"/><ellipse cx="150" cy="20" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="30" x2="150" y2="56" stroke="'+c+'" stroke-width="3"/><line x1="150" y1="56" x2="116" y2="88" stroke="'+c+'" stroke-width="3"/><line x1="150" y1="56" x2="184" y2="88" stroke="'+c+'" stroke-width="3"/><line x1="116" y1="88" x2="109" y2="108" stroke="'+c+'" stroke-width="2.5"/><line x1="184" y1="88" x2="191" y2="108" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Squat</text></svg>';
+  } else if(/pull-up|pull up|pullup/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="60" y="6" width="180" height="8" rx="4" fill="#444"/><ellipse cx="150" cy="26" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="114" y1="14" x2="122" y2="36" stroke="'+c+'" stroke-width="2.5"/><line x1="186" y1="14" x2="178" y2="36" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="50" x2="150" y2="76" stroke="'+c+'" stroke-width="3"/><line x1="150" y1="66" x2="126" y2="100" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="66" x2="174" y2="100" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="116" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Pull-up</text></svg>';
+  } else if(/romanian|rdl/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><ellipse cx="150" cy="22" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="32" x2="144" y2="72" stroke="'+c+'" stroke-width="3"/><line x1="144" y1="72" x2="116" y2="90" stroke="'+c+'" stroke-width="3"/><line x1="144" y1="72" x2="172" y2="85" stroke="'+c+'" stroke-width="3"/><line x1="84" y1="82" x2="216" y2="82" stroke="#444" stroke-width="6" stroke-linecap="round"/><circle cx="77" cy="82" r="8" fill="none" stroke="#444" stroke-width="2.5"/><circle cx="223" cy="82" r="8" fill="none" stroke="#444" stroke-width="2.5"/><line x1="116" y1="90" x2="110" y2="108" stroke="'+c+'" stroke-width="2.5"/><line x1="172" y1="85" x2="178" y2="108" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Romanian Deadlift</text></svg>';
+  } else if(/overhead|shoulder press/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><ellipse cx="150" cy="78" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="68" x2="150" y2="50" stroke="'+c+'" stroke-width="3"/><line x1="100" y1="50" x2="200" y2="50" stroke="#444" stroke-width="6" stroke-linecap="round"/><circle cx="93" cy="50" r="8" fill="none" stroke="#444" stroke-width="2.5"/><circle cx="207" cy="50" r="8" fill="none" stroke="#444" stroke-width="2.5"/><line x1="150" y1="88" x2="126" y2="110" stroke="'+c+'" stroke-width="3"/><line x1="150" y1="88" x2="174" y2="110" stroke="'+c+'" stroke-width="3"/><text x="150" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Overhead Press</text></svg>';
+  } else if(/row/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><ellipse cx="78" cy="46" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="78" y1="56" x2="84" y2="80" stroke="'+c+'" stroke-width="3"/><line x1="78" y1="68" x2="60" y2="90" stroke="'+c+'" stroke-width="2.5"/><line x1="84" y1="80" x2="80" y2="106" stroke="'+c+'" stroke-width="2.5"/><line x1="60" y1="90" x2="56" y2="106" stroke="'+c+'" stroke-width="2.5"/><line x1="92" y1="68" x2="222" y2="68" stroke="#444" stroke-width="6" stroke-linecap="round"/><circle cx="230" cy="68" r="10" fill="none" stroke="#444" stroke-width="2.5"/><text x="150" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Bent-over Row</text></svg>';
+  } else if(/hip thrust/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="22" y="62" width="70" height="16" rx="6" fill="#333"/><ellipse cx="124" cy="50" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="92" y1="62" x2="200" y2="62" stroke="'+c+'" stroke-width="3"/><rect x="118" y="58" width="24" height="10" rx="3" fill="#444"/><line x1="200" y1="62" x2="222" y2="90" stroke="'+c+'" stroke-width="2.5"/><line x1="92" y1="62" x2="76" y2="90" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="112" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Hip Thrust</text></svg>';
+  } else if(/lateral|face pull/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><ellipse cx="150" cy="30" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="40" x2="150" y2="66" stroke="'+c+'" stroke-width="3"/><line x1="150" y1="52" x2="100" y2="68" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="52" x2="200" y2="68" stroke="'+c+'" stroke-width="2.5"/><circle cx="94" cy="70" r="6" fill="#444"/><circle cx="206" cy="70" r="6" fill="#444"/><line x1="150" y1="66" x2="124" y2="100" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="66" x2="176" y2="100" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="116" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Lateral Raise</text></svg>';
+  } else if(/curl/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><ellipse cx="150" cy="16" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="26" x2="150" y2="48" stroke="'+c+'" stroke-width="3"/><line x1="150" y1="48" x2="130" y2="74" stroke="'+c+'" stroke-width="3"/><line x1="124" y1="66" x2="168" y2="66" stroke="#444" stroke-width="6" stroke-linecap="round"/><line x1="150" y1="48" x2="170" y2="64" stroke="'+c+'" stroke-width="2.5"/><line x1="130" y1="74" x2="124" y2="96" stroke="'+c+'" stroke-width="2.5"/><line x1="170" y1="64" x2="176" y2="96" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="112" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Curl</text></svg>';
+  } else if(/leg press/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="208" y="10" width="80" height="100" rx="8" fill="#1A1A1A" stroke="#333" stroke-width="1.5"/><ellipse cx="108" cy="48" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="108" y1="58" x2="114" y2="80" stroke="'+c+'" stroke-width="3"/><line x1="114" y1="80" x2="162" y2="56" stroke="'+c+'" stroke-width="3"/><line x1="114" y1="80" x2="96" y2="106" stroke="'+c+'" stroke-width="2.5"/><line x1="162" y1="56" x2="206" y2="56" stroke="'+c+'" stroke-width="2.5"/><text x="120" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Leg Press</text></svg>';
+  } else if(/split squat|bulgarian/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="210" y="78" width="80" height="12" rx="5" fill="#333"/><ellipse cx="118" cy="22" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="118" y1="32" x2="120" y2="56" stroke="'+c+'" stroke-width="3"/><line x1="120" y1="56" x2="86" y2="94" stroke="'+c+'" stroke-width="3"/><line x1="120" y1="56" x2="158" y2="78" stroke="'+c+'" stroke-width="3"/><line x1="158" y1="78" x2="210" y2="82" stroke="'+c+'" stroke-width="2.5"/><line x1="86" y1="94" x2="80" y2="112" stroke="'+c+'" stroke-width="2.5"/><text x="140" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Split Squat</text></svg>';
+  } else if(/leg curl|leg extension/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="10" y="46" width="190" height="28" rx="12" fill="#1A1A1A" stroke="#333" stroke-width="1.5"/><ellipse cx="116" cy="28" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="116" y1="38" x2="120" y2="60" stroke="'+c+'" stroke-width="3"/><line x1="120" y1="60" x2="168" y2="96" stroke="'+c+'" stroke-width="3"/><circle cx="174" cy="100" r="8" fill="#444"/><text x="140" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Leg Extension / Curl</text></svg>';
+  } else if(/calf/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="90" y="102" width="120" height="10" rx="4" fill="#333"/><ellipse cx="150" cy="16" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="26" x2="150" y2="58" stroke="'+c+'" stroke-width="3"/><line x1="150" y1="58" x2="126" y2="90" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="58" x2="174" y2="90" stroke="'+c+'" stroke-width="2.5"/><line x1="126" y1="90" x2="120" y2="102" stroke="'+c+'" stroke-width="2.5"/><line x1="174" y1="90" x2="180" y2="102" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Calf Raise</text></svg>';
+  } else if(/pushdown|skull/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><ellipse cx="150" cy="16" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="26" x2="150" y2="50" stroke="'+c+'" stroke-width="3"/><line x1="124" y1="40" x2="176" y2="40" stroke="'+c+'" stroke-width="2.5"/><line x1="124" y1="40" x2="112" y2="70" stroke="'+c+'" stroke-width="2.5"/><line x1="176" y1="40" x2="188" y2="70" stroke="'+c+'" stroke-width="2.5"/><line x1="104" y1="70" x2="196" y2="70" stroke="#444" stroke-width="6" stroke-linecap="round"/><line x1="150" y1="50" x2="126" y2="82" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="50" x2="174" y2="82" stroke="'+c+'" stroke-width="2.5"/><line x1="126" y1="82" x2="120" y2="106" stroke="'+c+'" stroke-width="2.5"/><line x1="174" y1="82" x2="180" y2="106" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Pushdown / Skull Crusher</text></svg>';
+  } else if(/arm circle/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><ellipse cx="150" cy="28" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="38" x2="150" y2="68" stroke="'+c+'" stroke-width="3"/><line x1="150" y1="52" x2="96" y2="52" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="52" x2="204" y2="52" stroke="'+c+'" stroke-width="2.5"/><path d="M96 52 Q76 28 96 10" fill="none" stroke="'+c+'" stroke-width="2" stroke-dasharray="5,3"/><path d="M204 52 Q224 28 204 10" fill="none" stroke="'+c+'" stroke-width="2" stroke-dasharray="5,3"/><line x1="150" y1="68" x2="126" y2="102" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="68" x2="174" y2="102" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="116" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Arm Circles</text></svg>';
+  } else if(/hip circle/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><ellipse cx="130" cy="22" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="130" y1="32" x2="128" y2="60" stroke="'+c+'" stroke-width="3"/><line x1="128" y1="60" x2="106" y2="98" stroke="'+c+'" stroke-width="2.5"/><line x1="128" y1="60" x2="162" y2="86" stroke="'+c+'" stroke-width="2.5"/><circle cx="180" cy="60" r="22" fill="none" stroke="'+c+'" stroke-width="2" stroke-dasharray="6,4"/><text x="140" y="116" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Hip Circles</text></svg>';
+  } else if(/glute bridge/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><line x1="20" y1="106" x2="280" y2="106" stroke="#333" stroke-width="2.5"/><ellipse cx="84" cy="54" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><path d="M84 64 Q120 38 165 56 Q200 72 220 106" fill="none" stroke="'+c+'" stroke-width="3"/><line x1="220" y1="106" x2="244" y2="82" stroke="'+c+'" stroke-width="2.5"/><line x1="220" y1="106" x2="196" y2="106" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Glute Bridge</text></svg>';
+  } else if(/dead hang/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="60" y="6" width="180" height="8" rx="4" fill="#444"/><ellipse cx="150" cy="68" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="124" y1="14" x2="130" y2="50" stroke="'+c+'" stroke-width="2.5"/><line x1="176" y1="14" x2="170" y2="50" stroke="'+c+'" stroke-width="2.5"/><line x1="130" y1="50" x2="141" y2="58" stroke="'+c+'" stroke-width="2"/><line x1="170" y1="50" x2="159" y2="58" stroke="'+c+'" stroke-width="2"/><line x1="150" y1="78" x2="136" y2="108" stroke="'+c+'" stroke-width="2.5"/><line x1="150" y1="78" x2="164" y2="108" stroke="'+c+'" stroke-width="2.5"/><text x="150" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Dead Hang</text></svg>';
+  } else if(/leg swing/.test(n)){
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><rect x="230" y="10" width="10" height="100" rx="5" fill="#333"/><ellipse cx="130" cy="22" rx="9" ry="10" fill="none" stroke="'+c+'" stroke-width="2.5"/><line x1="130" y1="32" x2="130" y2="62" stroke="'+c+'" stroke-width="3"/><line x1="130" y1="62" x2="108" y2="98" stroke="'+c+'" stroke-width="2.5"/><line x1="130" y1="62" x2="158" y2="42" stroke="'+c+'" stroke-width="2" stroke-dasharray="5,3"/><path d="M158 42 Q175 30 178 42" fill="none" stroke="'+c+'" stroke-width="2" stroke-dasharray="4,3"/><line x1="108" y1="98" x2="104" y2="112" stroke="'+c+'" stroke-width="2.5"/><text x="140" y="118" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Leg Swings</text></svg>';
+  } else {
+    svg='<svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%"><rect width="300" height="120" fill="#111"/><polyline points="20,86 54,86 76,40 100,102 128,56 156,86 192,86 220,64 248,86 280,86" fill="none" stroke="'+c+'" stroke-width="3" stroke-linejoin="round"/><text x="150" y="114" text-anchor="middle" fill="#555" font-size="12" font-family="sans-serif">Exercise</text></svg>';
+  }
+  return '<div class="exsvg">'+svg+'</div>';
+}
+
+function togExB(id){var el=document.getElementById(id);if(el)el.classList.toggle('on');}
+function togEx(k){G.exDone[k]=!G.exDone[k];updBars();renderWkt(G.day);}
+
+function renderSleepRec(){
+  var ws=G.phase==1?BWK:CWK,day=ws[G.day];
+  var wu=WARMUPS[day?day.type:'rest']||[];
+  var doneEx=0;
+  if(day) day.ex.forEach(function(e,i){if(G.exDone[G.day+i]) doneEx++;});
+  wu.forEach(function(e,i){if(G.exDone['wu'+G.day+i]) doneEx++;});
+  var block=getMeals()[getBlockIdx()],totalK=0;
+  Object.keys(G.mealDone).forEach(function(k){if(!G.mealDone[k]) return;var i=parseInt(k.replace('m',''));if(block.meals[i]) totalK+=block.meals[i].k;});
+  var tk=G.phase==1?3100:2400;
+  var rec=8.0,reasons=[];
+  if(doneEx>=4){rec+=0.5;reasons.push('heavy session completed');}
+  if(totalK<tk*0.7){rec+=0.5;reasons.push('low calorie intake today');}
+  if(G.phase==2){rec=8.5;reasons.push('cut phase — recovery is critical');}
+  var box=document.getElementById('sleep-rec');
+  if(box) box.innerHTML='<div class="sleeprec"><div style="font-weight:600;margin-bottom:4px">Recommended sleep tonight: '+rec.toFixed(1)+'h</div><div>'+(reasons.length?'Based on: '+reasons.join(', '):'Log meals and workouts for a personalised recommendation')+'</div></div>';
+  document.getElementById('h-sln').textContent='Target: '+rec.toFixed(1)+'h';
+}
+
+function renderSupps(){
+  var html='';
+  SUPPS.forEach(function(s){
+    html+='<div class="supp-row"><div style="display:flex;align-items:center;gap:10px"><div style="width:10px;height:10px;border-radius:50%;background:'+s.c+';flex-shrink:0"></div><div><div style="font-size:13px;font-weight:600">'+s.name+'</div><div style="font-size:11px;color:#666;margin-top:2px">'+s.dose+'</div></div></div><button class="ts'+(s.on?' on':'')+'" onclick="togSupp(\''+s.id+'\')"><div class="tk"></div></button></div>';
+  });
+  document.getElementById('supp-out').innerHTML=html;
+}
+
+function togSupp(id){SUPPS.forEach(function(s){if(s.id==id)s.on=!s.on;});renderSupps();}
+
+function saveHealth(){
+  var steps=document.getElementById('in-steps').value;
+  var acal=document.getElementById('in-acal').value;
+  var hr=document.getElementById('in-hr').value;
+  var sleep=document.getElementById('in-sleep').value;
+  if(steps){G.stepsVal=parseInt(steps);var t=10000;document.getElementById('h-steps').textContent=G.stepsVal.toLocaleString();document.getElementById('h-sb').style.width=Math.min(100,Math.round(G.stepsVal/t*100))+'%';document.getElementById('t-steps').textContent=G.stepsVal.toLocaleString()+' / '+t.toLocaleString();document.getElementById('b-steps').style.width=Math.min(100,Math.round(G.stepsVal/t*100))+'%';}
+  if(acal) document.getElementById('h-acal').textContent=parseInt(acal).toLocaleString();
+  if(hr) document.getElementById('h-hr').textContent=parseInt(hr);
+  if(sleep){G.sleepVal=parseFloat(sleep);var recH=parseFloat((document.getElementById('h-sln').textContent.match(/[\d.]+/)||['8'])[0])||8;document.getElementById('h-sleep').textContent=G.sleepVal.toFixed(1)+'h';document.getElementById('h-slb').style.width=Math.min(100,Math.round(G.sleepVal/recH*100))+'%';}
+  ['in-steps','in-acal','in-hr','in-sleep'].forEach(function(id){document.getElementById(id).value='';});
+}
+
+function saveWeight(){
+  var v=parseFloat(document.getElementById('in-wt').value);
+  if(!v||v<40||v>200) return;
+  document.getElementById('in-wt').value='';
+  document.getElementById('t-wt').textContent=v.toFixed(1)+' kg';
+  var today=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+  G.wtLog.unshift({d:today,w:v});
+  document.getElementById('wt-log').innerHTML=G.wtLog.slice(0,6).map(function(l){return '<div class="loge"><span>'+l.d+'</span><span style="color:#00C896;font-weight:600">'+l.w.toFixed(1)+' kg</span></div>';}).join('');
+  renderTimeline();
+}
+
+function renderTimeline(){
+  var now=new Date();
+  var p1s=new Date('2026-04-21'),p1e=new Date('2026-07-05'),p2e=new Date('2026-08-31');
+  var isP1=G.phase==1;
+  var pct=isP1?Math.min(100,Math.max(0,Math.round((now-p1s)/(p1e-p1s)*100))):Math.min(100,Math.max(0,Math.round((now-p1e)/(p2e-p1e)*100)));
+  var dLeft=isP1?Math.max(0,Math.ceil((p1e-now)/86400000)):Math.max(0,Math.ceil((p2e-now)/86400000));
+  var color=isP1?'#00C896':'#FF9F0A';
+  var label=isP1?'21 Apr 2026 to 5 Jul 2026':'5 Jul 2026 to 31 Aug 2026 (8 weeks)';
+  var html='<div style="font-size:12px;color:#666;margin-bottom:6px">'+label+'</div>';
+  html+='<div class="pt" style="height:12px;margin-bottom:8px"><div class="pf" style="width:'+pct+'%;background:'+color+'"></div></div>';
+  html+='<div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:#666">'+pct+'% complete</span><span style="color:'+color+';font-weight:600">'+dLeft+' days remaining</span></div>';
+  if(isP1) html+='<div style="font-size:11px;color:#444;margin-top:6px">Cut phase starts 5 Jul 2026 — Holiday 31 Aug 2026</div>';
+  var el=document.getElementById('timeline-box');
+  if(el) el.innerHTML=html;
+}
+
+(function init(){
+  var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var todayName=dayNames[new Date().getDay()];
+  var ws=BWK;
+  G.day=ws[todayName]?todayName:'Mon';
+  document.getElementById('hdr-date').textContent=new Date().toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+  var hol=new Date('2026-08-31'),now=new Date();
+  document.getElementById('t-hol').textContent=Math.max(0,Math.ceil((hol-now)/86400000))+' days';
+  renderDiet();
+  renderWkt(G.day);
+  renderSupps();
+  renderSleepRec();
+  renderTimeline();
+})();
+</script>
+</body>
+</html>
